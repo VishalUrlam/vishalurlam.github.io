@@ -1,12 +1,22 @@
+import { lazy, Suspense } from 'react'
 import HeroSection from './HeroSection'
-import ThingsILove from './ThingsILove'
 import './ThingsILove.css'
+
+const Projects = lazy(() => import('./Projects'))
+const Publications = lazy(() => import('./Publications'))
+const Awards = lazy(() => import('./Awards'))
+const ThingsILove = lazy(() => import('./ThingsILove'))
 
 function App() {
   return (
     <main>
       <HeroSection />
-      <ThingsILove />
+      <Suspense fallback={null}>
+        <Projects />
+        <Publications />
+        <Awards />
+        <ThingsILove />
+      </Suspense>
     </main>
   )
 }

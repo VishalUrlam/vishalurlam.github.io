@@ -153,19 +153,18 @@ function useProcessedImages(stickers) {
   return urls;
 }
 
-/* ─── A draggable sticker with click-to-reveal story ─── */
+/* ─── A draggable sticker with hover-to-reveal story ─── */
 const Sticker = ({
   sticker, index, processedSrc, playgroundRef,
-  isActive, onToggle, onMove, onRotate,
+  onMove, onRotate,
 }) => {
   const elRef = useRef(null);
   const handleRef = useRef(null);
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
-  // Live rotation lives in a motion value so the gesture handler can write
-  // to it directly with zero React re-render lag.
   const rotMV = useMotionValue(sticker.rot);
   const draggedRef = useRef(false);
+  const [hovered, setHovered] = useState(false);
 
   // Initial spring-in for the rotation. Runs once on mount.
   useEffect(() => {
@@ -233,11 +232,11 @@ const Sticker = ({
     return () => el.removeEventListener("pointerdown", onDown);
     // Re-run when the handle mounts (isActive flips on/off) or when the
     // rotate callback identity changes.
-  }, [isActive, sticker.id, onRotate, rotMV]);
+  }, [hovered, sticker.id, onRotate, rotMV]);
 
   const handleDragStart = () => {
     draggedRef.current = true;
-    if (isActive) onToggle(sticker.id);
+    setHovered(false);
   };
 
   const handleDragEnd = () => {
@@ -260,12 +259,6 @@ const Sticker = ({
     setTimeout(() => { draggedRef.current = false; }, 0);
   };
 
-  const handleClick = (e) => {
-    if (draggedRef.current) return;
-    e.stopPropagation();
-    onToggle(sticker.id);
-  };
-
   return (
     <motion.div
       ref={elRef}
@@ -275,8 +268,10 @@ const Sticker = ({
         top:  `${sticker.y}%`,
         x: dragX,
         y: dragY,
-        zIndex: isActive ? 100 : undefined,
+        zIndex: hovered ? 100 : undefined,
       }}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
@@ -292,7 +287,6 @@ const Sticker = ({
       whileTap={{ scale: 1.05, zIndex: 100 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onClick={handleClick}
     >
       {/* Image + handle live inside one rotating group so they spin
           together in real time. The bubble lives OUTSIDE this group so
@@ -306,7 +300,7 @@ const Sticker = ({
         />
 
         <AnimatePresence>
-          {isActive && (
+          {hovered && (
             <motion.button
               key="rotate"
               ref={handleRef}
@@ -331,7 +325,7 @@ const Sticker = ({
       </motion.div>
 
       <AnimatePresence>
-        {isActive && (
+        {hovered && (
           <motion.div
             key="bubble"
             className="sticker-bubble"
@@ -352,20 +346,8 @@ const Sticker = ({
 /* ─── Main Component ─── */
 export default function ThingsILove() {
   const [stickers, setStickers] = useState(STICKERS);
-  const [activeId, setActiveId] = useState(null);
   const playgroundRef = useRef(null);
   const stickerUrls = useProcessedImages(STICKERS);
-
-  // Click anywhere outside a sticker closes the open bubble.
-  useEffect(() => {
-    const onDocClick = () => setActiveId(null);
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, []);
-
-  const handleToggle = useCallback((id) => {
-    setActiveId((prev) => (prev === id ? null : id));
-  }, []);
 
   const handleMove = useCallback((id, x, y) => {
     setStickers((prev) =>
@@ -402,6 +384,9 @@ export default function ThingsILove() {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
+        <p style={{ fontFamily: '"Space Grotesk", sans-serif', fontSize: '0.875rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ef4444', marginBottom: '1rem' }}>
+          / personal
+        </p>
         <h2 className="things-title">
           Things That I{" "}
           <span className="title-love-gradient">
@@ -456,8 +441,6 @@ export default function ThingsILove() {
             index={i}
             processedSrc={stickerUrls[sticker.id]}
             playgroundRef={playgroundRef}
-            isActive={activeId === sticker.id}
-            onToggle={handleToggle}
             onMove={handleMove}
             onRotate={handleRotate}
           />
