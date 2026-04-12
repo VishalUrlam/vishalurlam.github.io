@@ -8,6 +8,7 @@ body {
   margin: 0;
   background-color: #09090b; /* zinc-950 */
   color: white;
+  overflow-x: hidden;
 }
 
 @keyframes hero-dot-in {
