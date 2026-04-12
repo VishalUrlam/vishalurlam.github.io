@@ -158,8 +158,8 @@ function AwardStamp({ award, index }) {
 
 export default function Awards() {
   return (
-    <section className="relative w-full py-28 md:py-36 px-8 md:px-16 bg-[#131315] overflow-hidden">
-      <div className="max-w-6xl mx-auto relative z-10">
+    <section className="relative w-full py-28 md:py-36 px-6 bg-[#131315] overflow-hidden">
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <motion.header
           className="mb-20 relative"
