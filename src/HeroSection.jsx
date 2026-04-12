@@ -93,7 +93,7 @@ const LETTERS = {
   ],
 };
 
-const STAGGER_RATE = 0.01768;
+const STAGGER_RATE = 0.021;
 const PER_DOT_DURATION = 0.1;
 const WARMUP = 0.5;
 const sizeClasses = "w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6";
