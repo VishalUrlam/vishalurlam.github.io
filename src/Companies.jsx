@@ -1,22 +1,27 @@
 import { motion } from "framer-motion";
 import "./Companies.css";
 
-// Drop real logos in src/assets/company-assets/ and import them here, e.g.:
-// import yc from "./assets/company-assets/ycombinator.svg";
+import yCombinator from "./assets/company-assets/y-combinator.png";
+import google from "./assets/company-assets/google.png";
+import intel from "./assets/company-assets/intel.png";
+import nissan from "./assets/company-assets/nissan.png";
+import tataPower from "./assets/company-assets/tata-power.png";
+import carnegieMellon from "./assets/company-assets/carnegie-mellon.png";
+import cityOfPittsburgh from "./assets/company-assets/city-of-pittsburgh.png";
+import pittsburghAirport from "./assets/company-assets/pittsburgh-airport.png";
 
 // ── Edit me ───────────────────────────────────────────────────────────────
-// Add/remove companies here. To use a real logo, set `logo` to an imported
-// image (e.g. import acme from "./assets/company-assets/acme.svg") — it renders
-// instead of the text wordmark. Otherwise the styled name is shown.
+// Add/remove companies here. `logo` is an imported PNG (rendered as a uniform
+// white monochrome mark); omit it to fall back to a styled text wordmark.
 const COMPANIES = [
-  { name: "Y Combinator" }, // swap to { name: "Y Combinator", logo: yc } once added
-  { name: "Harvard" },
-  { name: "MIT" },
-  { name: "Google" },
-  { name: "Intel" },
-  { name: "Nissan" },
-  { name: "Northwestern" },
-  { name: "Foveal Vision" },
+  { name: "Y Combinator", logo: yCombinator },
+  { name: "Google", logo: google },
+  { name: "Intel", logo: intel },
+  { name: "Nissan", logo: nissan },
+  { name: "Tata Power", logo: tataPower },
+  { name: "Carnegie Mellon", logo: carnegieMellon },
+  { name: "City of Pittsburgh", logo: cityOfPittsburgh },
+  { name: "Pittsburgh Airport", logo: pittsburghAirport },
 ];
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -26,8 +31,8 @@ function Logo({ company }) {
       <img
         src={company.logo}
         alt={company.name}
-        className="h-8 md:h-10 w-auto object-contain opacity-50 grayscale
-                   hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+        className="h-7 md:h-9 w-auto object-contain opacity-50 transition-all duration-300
+                   hover:opacity-100 [filter:brightness(0)_invert(1)]"
       />
     );
   }
@@ -64,16 +69,6 @@ export default function Companies() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          {/* Pixel grid accent */}
-          <div
-            className="absolute -top-12 -left-12 w-32 h-32 pointer-events-none opacity-10"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, #474747 1px, transparent 1px), linear-gradient(to bottom, #474747 1px, transparent 1px)",
-              backgroundSize: "24px 24px",
-            }}
-          />
-
           <p
             className="text-sm tracking-[0.2em] uppercase text-[#ef4444] mb-4"
             style={{ fontFamily: '"Space Grotesk", sans-serif' }}
@@ -84,7 +79,7 @@ export default function Companies() {
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[-0.04em] text-white uppercase leading-none"
             style={{ fontFamily: '"Manrope", sans-serif' }}
           >
-            Where I've <span style={{ color: "#27272a" }}>Worked</span>
+            Backed &amp; <span style={{ color: "#27272a" }}>Recognized By</span>
           </h2>
           <div className="mt-8 flex items-center gap-4">
             <div className="h-px w-24 bg-[#474747]" />
