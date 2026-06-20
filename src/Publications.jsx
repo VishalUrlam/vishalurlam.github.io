@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const PAPERS = [
   {
     title: "Design and Implementation of Resonance based Wireless Power Transfer System",
-    venue: "IEEE 2020 International Conference on Futuristic Technologies in Control Systems & Renewable Energy (ICFCR)",
+    venue: "IEEE International Conference for Innovation in Technology (INOCON)",
     year: "2020",
     authors: "V. Urlam et al.",
     description: "A 15 W wireless power transfer system designed and implemented for demonstration. The system delivers up to 10 W output with 68.389% efficiency using Series-Series compensation, with efficiency inversely proportional to coil airgap.",

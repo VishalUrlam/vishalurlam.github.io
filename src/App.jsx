@@ -5,7 +5,10 @@ import './ThingsILove.css'
 const Projects = lazy(() => import('./Projects'))
 const Publications = lazy(() => import('./Publications'))
 const Awards = lazy(() => import('./Awards'))
-const ThingsILove = lazy(() => import('./ThingsILove'))
+const Companies = lazy(() => import('./Companies'))
+const Footer = lazy(() => import('./Footer'))
+// Hidden for now — restore by re-adding <ThingsILove /> below.
+// const ThingsILove = lazy(() => import('./ThingsILove'))
 
 function App() {
   return (
@@ -14,8 +17,10 @@ function App() {
       <Suspense fallback={null}>
         <Projects />
         <Publications />
+        <Companies />
         <Awards />
-        <ThingsILove />
+        {/* <ThingsILove /> */}
+        <Footer />
       </Suspense>
     </main>
   )
