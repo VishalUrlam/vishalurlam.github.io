@@ -15,11 +15,11 @@ export default function Publications() {
   const paper = PAPERS[0];
 
   return (
-    <section className="relative w-full py-28 md:py-36 px-6 bg-[#09090b] overflow-hidden">
+    <section className="page-section relative w-full px-6 overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Section label */}
         <motion.div
-          className="mb-16"
+          className="section-header"
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}

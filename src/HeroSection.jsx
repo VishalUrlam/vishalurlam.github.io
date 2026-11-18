@@ -93,10 +93,10 @@ const LETTERS = {
   ],
 };
 
-const STAGGER_RATE = 0.021;
-const PER_DOT_DURATION = 0.1;
-const WARMUP = 0.5;
-const sizeClasses = "w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6";
+const STAGGER_RATE = 0.02;
+const PER_DOT_DURATION = 0.65;
+const WARMUP = 0.2;
+const sizeClasses = "hero-pixel";
 
 const Block = ({ type, delayIndex }) => {
   if (type === 0) {
@@ -105,11 +105,9 @@ const Block = ({ type, delayIndex }) => {
 
   let targetBg = "#d4d4d8";
   let targetRadius = "2px";
-  let targetShadow = "none";
 
   if (type === 2) {
     targetBg = "#ffffff";
-    targetShadow = "0 0 15px rgba(255,255,255,0.8)";
   } else if (type === 3) {
     targetBg = "#ef4444";
     targetRadius = "50%";
@@ -119,15 +117,16 @@ const Block = ({ type, delayIndex }) => {
 
   return (
     <div
-      className={`${sizeClasses} relative hero-dot`}
+      className={`${sizeClasses} hero-dot${type === 3 ? " hero-dot--period" : ""}`}
       style={{
         "--dot-bg": targetBg,
         "--dot-radius": targetRadius,
-        "--dot-shadow": targetShadow,
         "--dot-delay": `${delayTime}s`,
         "--dot-duration": `${PER_DOT_DURATION}s`,
       }}
-    />
+    >
+      <div className="hero-dot__face" />
+    </div>
   );
 };
 
@@ -135,7 +134,7 @@ const LetterGrid = ({ letterData, uniqueId }) => {
   const cols = letterData[0]?.length ?? 5;
   return (
     <div
-      className="grid gap-0.5 sm:gap-1 md:gap-1.5"
+      className="hero-letter"
       style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
     >
       {letterData.map((row, rIdx) =>
@@ -236,7 +235,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="min-h-screen w-full flex flex-col items-center justify-center bg-zinc-950 overflow-hidden relative">
+    <section className="page-surface min-h-screen w-full flex flex-col items-center justify-center overflow-hidden relative">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -248,8 +247,9 @@ export default function HeroSection() {
         }}
       />
 
-      <div className="relative z-10 flex flex-col gap-10 sm:gap-14 md:gap-20 items-start overflow-visible">
-        <div className="flex gap-2 sm:gap-4 md:gap-6 lg:gap-8">
+      <h1 className="sr-only">Vishal Urlam.</h1>
+      <div className="hero-name relative z-10" aria-hidden="true">
+        <div className="hero-word">
           {firstRowData.map((letterData, index) => (
             <LetterGrid
               key={`first-${index}`}
@@ -259,7 +259,7 @@ export default function HeroSection() {
           ))}
         </div>
         
-        <div className="flex gap-2 sm:gap-4 md:gap-6 lg:gap-8">
+        <div className="hero-word">
           {secondRowData.map((letterData, index) => (
             <LetterGrid
               key={`last-${index}`}

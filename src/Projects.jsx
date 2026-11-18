@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PROJECTS = [
@@ -31,46 +31,62 @@ const PROJECTS = [
 
 function ProjectRow({ project, index }) {
   const [open, setOpen] = useState(false);
+  const detailsId = useId();
   const num = String(index + 1).padStart(2, "0");
 
   return (
     <motion.div
-      className="group border-b border-white/[0.06] cursor-pointer"
+      className="border-b border-white/[0.06]"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5, delay: 0.08 * index }}
-      onClick={() => setOpen((p) => !p)}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
     >
-      <div className="flex items-baseline gap-6 md:gap-10 py-6 md:py-8">
-        {/* Big number */}
-        <span
-          className="text-3xl md:text-5xl font-black tabular-nums leading-none
-                     text-zinc-800 group-hover:text-zinc-500 transition-colors duration-300"
-          style={{ fontFamily: '"SF Mono", "Fira Code", "Consolas", monospace', minWidth: "2.5ch" }}
+      <h3>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={detailsId}
+          onClick={() => setOpen((previous) => !previous)}
+          className="group flex w-full items-baseline gap-6 md:gap-10 py-6 md:py-8 text-left
+                     focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-red-500"
         >
-          {num}
-        </span>
-
-        {/* Title + expand */}
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg md:text-2xl font-bold text-zinc-300 group-hover:text-zinc-50
-                         transition-colors duration-300 tracking-tight leading-snug">
+          <span
+            aria-hidden="true"
+            className="w-12 md:w-20 shrink-0 text-3xl md:text-5xl font-black tabular-nums leading-none
+                       text-zinc-800 group-hover:text-zinc-500 transition-colors duration-300"
+            style={{ fontFamily: '"SF Mono", "Fira Code", "Consolas", monospace' }}
+          >
+            {num}
+          </span>
+          <span className="flex-1 min-w-0 text-lg md:text-2xl font-bold text-zinc-300 group-hover:text-zinc-50
+                           transition-colors duration-300 tracking-tight leading-snug">
             {project.title}
-          </h3>
+          </span>
+          <motion.span
+            aria-hidden="true"
+            className="text-zinc-700 group-hover:text-zinc-400 transition-colors text-xl shrink-0"
+            animate={{ rotate: open ? 90 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            &rsaquo;
+          </motion.span>
+        </button>
+      </h3>
 
-          <AnimatePresence>
-            {open && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="overflow-hidden"
-              >
-                <p className="text-sm text-zinc-500 leading-relaxed mt-3 max-w-2xl">
+      <div id={detailsId} aria-hidden={!open}>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="overflow-hidden"
+            >
+              <div className="pl-[4.5rem] md:pl-[7.5rem] pb-6 md:pb-8">
+                <p className="text-sm text-zinc-500 leading-relaxed max-w-2xl">
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
@@ -81,19 +97,10 @@ function ProjectRow({ project, index }) {
                     </span>
                   ))}
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Arrow indicator */}
-        <motion.span
-          className="text-zinc-700 group-hover:text-zinc-400 transition-colors text-xl shrink-0"
-          animate={{ rotate: open ? 90 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          &rsaquo;
-        </motion.span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
@@ -101,11 +108,11 @@ function ProjectRow({ project, index }) {
 
 export default function Projects() {
   return (
-    <section className="relative w-full py-28 md:py-36 px-6 bg-[#09090b] overflow-hidden">
+    <section className="page-section relative w-full px-6 overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Title - left aligned, no gradient */}
         <motion.div
-          className="mb-4"
+          className="section-header"
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -121,13 +128,12 @@ export default function Projects() {
           </h2>
         </motion.div>
 
-        {/* Divider */}
-        <div className="h-px bg-white/[0.08] mb-2" />
-
-        {/* Project rows */}
-        {PROJECTS.map((project, i) => (
-          <ProjectRow key={project.title} project={project} index={i} />
-        ))}
+        <div>
+          <div className="h-px bg-white/[0.08] mb-2" />
+          {PROJECTS.map((project, i) => (
+            <ProjectRow key={project.title} project={project} index={i} />
+          ))}
+        </div>
       </div>
     </section>
   );

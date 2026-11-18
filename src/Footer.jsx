@@ -45,7 +45,7 @@ const SOCIALS = [
 
 export default function Footer() {
   return (
-    <footer className="relative w-full py-20 px-6 bg-[#131315] border-t border-[#27272a] overflow-hidden">
+    <footer className="page-section relative w-full px-6 border-t border-[#27272a] overflow-hidden">
       <div className="max-w-4xl mx-auto flex flex-col items-center gap-10">
         <p
           className="text-sm tracking-[0.2em] uppercase text-[#ef4444]"

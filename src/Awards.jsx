@@ -158,11 +158,11 @@ function AwardStamp({ award, index }) {
 
 export default function Awards() {
   return (
-    <section className="relative w-full py-28 md:py-36 px-6 bg-[#131315] overflow-hidden">
+    <section className="page-section relative w-full px-6 overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <motion.header
-          className="mb-20 relative"
+          className="section-header relative"
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
