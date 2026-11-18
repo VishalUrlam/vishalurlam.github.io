@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useLayoutEffect, useRef, useState } from "react";
+import { motion as Motion } from "framer-motion";
 import "./Companies.css";
 
 import yCombinator from "./assets/company-assets/y-combinator.png";
@@ -11,17 +12,17 @@ import cityOfPittsburgh from "./assets/company-assets/city-of-pittsburgh.png";
 import pittsburghAirport from "./assets/company-assets/pittsburgh-airport.png";
 
 // ── Edit me ───────────────────────────────────────────────────────────────
-// Add/remove companies here. `logo` is an imported PNG (rendered as a uniform
-// white monochrome mark); omit it to fall back to a styled text wordmark.
+// Transparent wordmarks use white; opaque artwork needs grayscale to retain detail.
+// Omit `logo` to fall back to a styled text wordmark.
 const COMPANIES = [
-  { name: "Y Combinator", logo: yCombinator },
-  { name: "Google", logo: google },
-  { name: "Intel", logo: intel },
-  { name: "Nissan", logo: nissan },
-  { name: "Tata Power", logo: tataPower },
-  { name: "Carnegie Mellon", logo: carnegieMellon },
-  { name: "City of Pittsburgh", logo: cityOfPittsburgh },
-  { name: "Pittsburgh Airport", logo: pittsburghAirport },
+  { name: "Y Combinator", logo: yCombinator, variant: "grayscale", square: true },
+  { name: "Google", logo: google, variant: "white" },
+  { name: "Intel", logo: intel, variant: "white" },
+  { name: "Nissan", logo: nissan, variant: "white", square: true },
+  { name: "Tata Power", logo: tataPower, variant: "white" },
+  { name: "Carnegie Mellon", logo: carnegieMellon, variant: "white" },
+  { name: "City of Pittsburgh", logo: cityOfPittsburgh, variant: "grayscale", square: true },
+  { name: "Pittsburgh Airport", logo: pittsburghAirport, variant: "grayscale" },
 ];
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -31,15 +32,13 @@ function Logo({ company }) {
       <img
         src={company.logo}
         alt={company.name}
-        className="h-7 md:h-9 w-auto object-contain opacity-50 transition-all duration-300
-                   hover:opacity-100 [filter:brightness(0)_invert(1)]"
+        className={`company-logo company-logo--${company.variant}${company.square ? " company-logo--square" : ""}`}
       />
     );
   }
   return (
     <span
-      className="text-2xl md:text-3xl font-bold tracking-tight text-[#919191]
-                 hover:text-white transition-colors duration-300 whitespace-nowrap"
+      className="company-wordmark text-2xl md:text-3xl font-bold tracking-tight text-white"
       style={{ fontFamily: '"Manrope", sans-serif' }}
     >
       {company.name}
@@ -47,9 +46,9 @@ function Logo({ company }) {
   );
 }
 
-function Track({ ariaHidden }) {
+function LogoGroup({ ariaHidden, groupRef }) {
   return (
-    <div className="marquee__track" aria-hidden={ariaHidden}>
+    <div className="marquee__group" aria-hidden={ariaHidden} ref={groupRef}>
       {COMPANIES.map((company, i) => (
         <Logo key={`${company.name}-${i}`} company={company} />
       ))}
@@ -58,12 +57,33 @@ function Track({ ariaHidden }) {
 }
 
 export default function Companies() {
+  const viewportRef = useRef(null);
+  const groupRef = useRef(null);
+  const [layout, setLayout] = useState({ width: 0, copies: 2 });
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    const group = groupRef.current;
+    const observer = new ResizeObserver(() => {
+      const width = group.getBoundingClientRect().width;
+      if (!width) return;
+
+      const copies = Math.max(2, Math.ceil(viewport.clientWidth / width) + 1);
+      setLayout(previous => previous.width === width && previous.copies === copies
+        ? previous
+        : { width, copies });
+    });
+    observer.observe(viewport);
+    observer.observe(group);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="relative w-full py-28 md:py-36 bg-[#131315] overflow-hidden">
+    <section className="page-section relative w-full overflow-hidden">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
-        <motion.header
-          className="mb-16 relative"
+        <Motion.header
+          className="section-header relative"
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -90,21 +110,32 @@ export default function Companies() {
               Companies &amp; Institutions
             </p>
           </div>
-        </motion.header>
+        </Motion.header>
       </div>
 
       {/* Full-bleed infinite marquee */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8 }}
         className="marquee"
+        ref={viewportRef}
       >
-        {/* Duplicate track for a seamless loop */}
-        <Track ariaHidden={false} />
-        <Track ariaHidden={true} />
-      </motion.div>
+        <div
+          className="marquee__track"
+          data-ready={layout.width > 0}
+          style={{
+            "--marquee-distance": `${layout.width}px`,
+            "--marquee-duration": `${layout.width / 52}s`,
+          }}
+        >
+          <LogoGroup ariaHidden={false} groupRef={groupRef} />
+          {Array.from({ length: layout.copies - 1 }, (_, index) => (
+            <LogoGroup key={index} ariaHidden={true} />
+          ))}
+        </div>
+      </Motion.div>
     </section>
   );
 }

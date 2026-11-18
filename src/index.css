@@ -4,33 +4,92 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --page-background: #09090b;
+  --section-padding: 64px;
+  --section-header-gap: 32px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-padding: 96px;
+    --section-header-gap: 48px;
+  }
+}
+
 body {
   margin: 0;
-  background-color: #09090b; /* zinc-950 */
+  background-color: var(--page-background);
   color: white;
   overflow-x: hidden;
 }
 
+.page-surface,
+.page-section {
+  background-color: var(--page-background);
+}
+
+.page-section {
+  padding-block: var(--section-padding);
+}
+
+.section-header {
+  margin-bottom: var(--section-header-gap);
+}
+
+::selection {
+  background-color: #fafafa;
+  color: #09090b;
+  text-shadow: none;
+}
+
+.hero-name {
+  /* The widest word is 30 dots + 24 inner gaps + 5 letter gaps = 43em.
+     Leave 20px at either edge, including room for the dot reveal overshoot. */
+  font-size: min(24px, calc((100vw - 40px) / 43));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(40px, 3.333em, 80px);
+}
+
+.hero-word {
+  display: flex;
+  gap: 1.4em;
+}
+
+.hero-letter {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.25em;
+}
+
+.hero-pixel {
+  width: 1em;
+  height: 1em;
+}
+
+/* A single mount-time reveal; hover transforms live on the outer dot. */
 @keyframes hero-dot-in {
   0% {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0.65);
     background-color: #ef4444;
     border-radius: 50%;
   }
-  1% {
+  12% {
     opacity: 1;
-    transform: scale(1.3);
+    transform: scale(1.08);
     background-color: #ef4444;
     border-radius: 50%;
   }
-  16% {
+  28% {
     opacity: 1;
-    transform: scale(1.3);
-    background-color: #ef4444;
-    border-radius: 50%;
+    transform: scale(1.04);
+    background-color: #ffffff;
+    border-radius: var(--dot-radius);
   }
-  17%, 100% {
+  100% {
     opacity: 1;
     transform: scale(1);
     background-color: var(--dot-bg);
@@ -38,17 +97,83 @@ body {
   }
 }
 
-.hero-dot {
-  background-color: var(--dot-bg);
-  border-radius: var(--dot-radius);
-  box-shadow: var(--dot-shadow);
-  animation: hero-dot-in var(--dot-duration) linear var(--dot-delay) backwards;
-  transition: transform 0.15s ease-out, background-color 0.15s ease-out, box-shadow 0.15s ease-out;
+@keyframes hero-period-in {
+  0% { opacity: 0; transform: scale(0.65); }
+  12% { opacity: 1; transform: scale(1.08); }
+  28% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-.hero-dot:hover {
-  transform: scale(1.3);
-  background-color: #ffffff;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 1);
-  z-index: 50;
+@keyframes hero-dot-glow {
+  0%, 12% { opacity: 0; }
+  28% { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
+.hero-dot {
+  --dot-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+
+.hero-dot__face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--dot-bg);
+  border-radius: var(--dot-radius);
+  animation: hero-dot-in var(--dot-duration) var(--dot-ease) var(--dot-delay) backwards;
+}
+
+/* Keep shadow blur fixed and animate glow opacity. */
+.hero-dot__face::before,
+.hero-dot__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.hero-dot__face::before {
+  box-shadow: 0 0 0.4em rgba(255, 255, 255, 0.6);
+  animation: hero-dot-glow var(--dot-duration) var(--dot-ease) var(--dot-delay) backwards;
+}
+
+.hero-dot__face::after {
+  box-shadow: 0 0 0.3em var(--dot-bg);
+}
+
+.hero-dot--period .hero-dot__face {
+  animation-name: hero-period-in;
+}
+
+.hero-dot--period .hero-dot__face::before {
+  box-shadow: 0 0 0.4em #ef4444;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero-dot {
+    transition: transform 250ms var(--dot-ease);
+  }
+
+  .hero-dot__face::after {
+    transition: opacity 250ms var(--dot-ease);
+  }
+
+  .hero-dot:hover {
+    transform: scale(1.05);
+    z-index: 1;
+  }
+
+  .hero-dot:hover .hero-dot__face::after {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-dot__face,
+  .hero-dot__face::before {
+    animation: none;
+  }
 }
